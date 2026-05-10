@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: coupon-management
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:coupon-mng}
+    username: ${DB_USER:coupon}
+    password: ${DB_PASSWORD:coupon}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

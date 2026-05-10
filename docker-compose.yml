@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: coupon-mng
+      POSTGRES_USER: coupon
+      POSTGRES_PASSWORD: coupon
+    ports:
+      - "5432:5432"
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: coupon-mng
+      DB_USER: coupon
+      DB_PASSWORD: coupon
+    depends_on:
+      - db
