@@ -4,9 +4,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import pl.mbalcer.couponmanagement.domain.exception.CouponAlreadyExistsException
-import pl.mbalcer.couponmanagement.domain.exception.CouponExhaustedException
-import pl.mbalcer.couponmanagement.domain.exception.CouponNotFoundException
+import pl.mbalcer.couponmanagement.domain.exception.*
 import pl.mbalcer.couponmanagement.infrastructure.web.dto.ErrorResponse
 
 @RestControllerAdvice
@@ -20,8 +18,16 @@ class GlobalExceptionHandler {
         ErrorResponse.of(HttpStatus.CONFLICT, ex.message!!)
 
     @ExceptionHandler(CouponAlreadyExistsException::class)
-    fun handleExhausted(ex: CouponAlreadyExistsException) =
+    fun handleCouponAlreadyExists(ex: CouponAlreadyExistsException) =
         ErrorResponse.of(HttpStatus.BAD_REQUEST, ex.message!!)
+
+    @ExceptionHandler(CountryNotAllowedException::class)
+    fun handleCountryNotAllowed(ex: CountryNotAllowedException) =
+        ErrorResponse.of(HttpStatus.FORBIDDEN, ex.message!!)
+
+    @ExceptionHandler(GeoIpResolutionException::class)
+    fun handleGeoIpResolutionException(ex: GeoIpResolutionException) =
+        ErrorResponse.of(HttpStatus.SERVICE_UNAVAILABLE, ex.message!!)
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidation(ex: MethodArgumentNotValidException): ErrorResponse {

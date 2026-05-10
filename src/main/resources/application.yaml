@@ -17,3 +17,6 @@ management:
     web:
       exposure:
         include: health,info,metrics
+
+geolocation:
+  local-country: PL

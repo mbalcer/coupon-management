@@ -1,5 +1,6 @@
 package pl.mbalcer.couponmanagement.infrastructure.web
 
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -26,9 +27,10 @@ class CouponController(
     @ResponseStatus(HttpStatus.OK)
     fun redeem(
         @PathVariable code: String,
-        @Valid @RequestBody request: RedeemCouponRequest
+        @Valid @RequestBody request: RedeemCouponRequest,
+        httpRequest: HttpServletRequest
     ) {
-        val clientIp = "127.0.0.1" // TODO: recognize ip
+        val clientIp = httpRequest.getHeader("X-Forwarded-For")?.split(",")?.first()?.trim() ?: httpRequest.remoteAddr
         redeemCouponUseCase.redeem(RedeemCouponUseCase.Command(code, request.userId, clientIp))
     }
 }
