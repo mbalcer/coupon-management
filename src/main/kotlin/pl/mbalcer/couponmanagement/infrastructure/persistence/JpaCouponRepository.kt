@@ -4,7 +4,7 @@ import pl.mbalcer.couponmanagement.domain.model.CountryCode
 import pl.mbalcer.couponmanagement.domain.model.Coupon
 import pl.mbalcer.couponmanagement.domain.model.CouponCode
 import pl.mbalcer.couponmanagement.domain.port.out.CouponRepository
-import java.util.UUID
+import java.util.*
 
 class JpaCouponRepository(private val repository: SpringCouponRepo) : CouponRepository {
     override fun save(coupon: Coupon): Coupon {
