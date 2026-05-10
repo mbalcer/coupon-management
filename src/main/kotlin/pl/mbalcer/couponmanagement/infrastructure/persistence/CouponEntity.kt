@@ -12,7 +12,7 @@ class CouponEntity(
     @Id val id: UUID = UUID.randomUUID(),
     val code: String,
     val countryCode: String,
-    val maxUses: Int,
     var currentUses: Int = 0,
+    val maxUses: Int,
     val createdAt: Instant
 )

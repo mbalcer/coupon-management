@@ -1,11 +1,13 @@
 package pl.mbalcer.couponmanagement.infrastructure.persistence
 
+import org.springframework.stereotype.Repository
 import pl.mbalcer.couponmanagement.domain.model.CountryCode
 import pl.mbalcer.couponmanagement.domain.model.Coupon
 import pl.mbalcer.couponmanagement.domain.model.CouponCode
 import pl.mbalcer.couponmanagement.domain.port.out.CouponRepository
 import java.util.*
 
+@Repository
 class JpaCouponRepository(private val repository: SpringCouponRepo) : CouponRepository {
     override fun save(coupon: Coupon): Coupon {
         return repository.save(coupon.toEntity()).toDomain()
