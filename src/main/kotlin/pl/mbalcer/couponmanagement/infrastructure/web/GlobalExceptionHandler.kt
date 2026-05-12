@@ -25,6 +25,11 @@ class GlobalExceptionHandler {
     fun handleCouponAlreadyExists(ex: CouponAlreadyExistsException) =
         ErrorResponse.of(HttpStatus.CONFLICT, ex.message!!)
 
+    @ExceptionHandler(CouponAlreadyUsedException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleCouponAlreadyUsed(ex: CouponAlreadyUsedException) =
+        ErrorResponse.of(HttpStatus.CONFLICT, ex.message!!)
+
     @ExceptionHandler(CountryNotAllowedException::class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     fun handleCountryNotAllowed(ex: CountryNotAllowedException) =

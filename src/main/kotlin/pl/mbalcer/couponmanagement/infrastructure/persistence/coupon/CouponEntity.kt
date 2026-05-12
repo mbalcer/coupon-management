@@ -1,4 +1,4 @@
-package pl.mbalcer.couponmanagement.infrastructure.persistence
+package pl.mbalcer.couponmanagement.infrastructure.persistence.coupon
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id

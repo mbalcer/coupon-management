@@ -1,4 +1,4 @@
-package pl.mbalcer.couponmanagement.infrastructure.persistence
+package pl.mbalcer.couponmanagement.infrastructure.persistence.coupon
 
 import org.springframework.stereotype.Repository
 import pl.mbalcer.couponmanagement.domain.model.CountryCode

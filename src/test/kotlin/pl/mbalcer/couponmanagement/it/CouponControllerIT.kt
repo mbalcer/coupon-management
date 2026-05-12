@@ -82,11 +82,13 @@ class CouponControllerIT {
         createCoupon("", -1, "PLN").andExpect {
             status { isBadRequest() }
             jsonPath("$.errorMessage") {
-                value(Matchers.allOf(
-                    Matchers.containsString("code: must not be blank"),
-                    Matchers.containsString("maxUses: must be greater than or equal to 1"),
-                    Matchers.containsString("countryCode: size must be between 2 and 2")
-                ))
+                value(
+                    Matchers.allOf(
+                        Matchers.containsString("code: must not be blank"),
+                        Matchers.containsString("maxUses: must be greater than or equal to 1"),
+                        Matchers.containsString("countryCode: size must be between 2 and 2")
+                    )
+                )
             }
         }
     }
@@ -159,6 +161,17 @@ class CouponControllerIT {
         executor.shutdown()
 
         assertEquals(successCount.get(), 5)
+    }
+
+    @Test
+    fun `returns 409 when coupon already used by user`() {
+        whenever(geolocationPort.getCountryCode(any())).thenReturn("PL")
+        createCoupon("PL123", 5, "PL").andExpect { status { isCreated() } }
+        redeemCoupon("PL123", "user-111").andExpect { status { isOk() } }
+        redeemCoupon("PL123", "user-111").andExpect {
+            status { isConflict() }
+            jsonPath("$.errorMessage") { value("User user-111 already used coupon PL123") }
+        }
     }
 
     private fun createCoupon(code: String, maxUses: Int, countryCode: String): ResultActionsDsl {
