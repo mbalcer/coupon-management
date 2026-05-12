@@ -1,6 +1,8 @@
 package pl.mbalcer.couponmanagement.infrastructure.geolocation
 
 import com.maxmind.geoip2.DatabaseReader
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
@@ -14,6 +16,7 @@ class IpGeolocationAdapter(
     @Value("\${geolocation.local-country:XX}") private val localCountry: String
 ) : IpGeolocationPort {
 
+    private val logger: Logger = LoggerFactory.getLogger(IpGeolocationPort::class.java)
     private val reader = DatabaseReader.Builder(mmdb.inputStream).build()
 
     companion object {
@@ -25,6 +28,7 @@ class IpGeolocationAdapter(
         else -> try {
             reader.country(InetAddress.getByName(ipAddress)).country().isoCode()
         } catch (e: Exception) {
+            logger.error("Failed to resolve country for IP: $ipAddress", e)
             throw GeoIpResolutionException()
         }
     }

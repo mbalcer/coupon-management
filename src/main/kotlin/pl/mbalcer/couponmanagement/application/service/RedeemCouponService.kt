@@ -1,6 +1,8 @@
 package pl.mbalcer.couponmanagement.application.service
 
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import pl.mbalcer.couponmanagement.domain.exception.CountryNotAllowedException
 import pl.mbalcer.couponmanagement.domain.exception.CouponAlreadyUsedException
@@ -19,22 +21,32 @@ class RedeemCouponService(
     private val geolocationAdapter: IpGeolocationPort,
     private val couponUsageRepo: CouponUsageRepository
 ) : RedeemCouponUseCase {
+
+    private val logger: Logger = LoggerFactory.getLogger(RedeemCouponService::class.java)
+
     override fun redeem(command: RedeemCouponUseCase.Command) {
         val code = CouponCode.of(command.code)
-        val coupon = couponRepo.findByCode(code) ?: throw CouponNotFoundException(code.value)
+        val coupon = couponRepo.findByCode(code) ?: run {
+            logger.warn("Coupon not found: $code")
+            throw CouponNotFoundException(code.value)
+        }
 
         val clientCountryCode = geolocationAdapter.getCountryCode(command.clientIp)
         if (coupon.countryCode.value != clientCountryCode) {
+            logger.warn("Coupon not allowed for country: ${coupon.countryCode.value}, client country: $clientCountryCode")
             throw CountryNotAllowedException(clientCountryCode, coupon.countryCode.value)
         }
 
         if (couponUsageRepo.existsByCouponIdAndUserId(coupon.id!!, command.userId)) {
+            logger.warn("Coupon already used for ${coupon.id} by user ${command.userId}")
             throw CouponAlreadyUsedException(command.userId, code.value)
         }
 
         if (!couponRepo.incrementUses(code)) {
+            logger.warn("Coupon exhausted: ${code.value}")
             throw CouponExhaustedException(code.value)
         }
         couponUsageRepo.save(coupon.id, command.userId)
+        logger.info("Coupon redeemed ${code.value} by user ${command.userId}")
     }
 }

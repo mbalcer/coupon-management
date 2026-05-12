@@ -1,5 +1,6 @@
 package pl.mbalcer.couponmanagement.infrastructure.web
 
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -28,6 +29,11 @@ class GlobalExceptionHandler {
     @ExceptionHandler(CouponAlreadyUsedException::class)
     @ResponseStatus(HttpStatus.CONFLICT)
     fun handleCouponAlreadyUsed(ex: CouponAlreadyUsedException) =
+        ErrorResponse.of(HttpStatus.CONFLICT, ex.message!!)
+
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleDataIntegrityViolation(ex: DataIntegrityViolationException) =
         ErrorResponse.of(HttpStatus.CONFLICT, ex.message!!)
 
     @ExceptionHandler(CountryNotAllowedException::class)
