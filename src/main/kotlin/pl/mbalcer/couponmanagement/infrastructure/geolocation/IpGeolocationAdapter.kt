@@ -19,13 +19,13 @@ class IpGeolocationAdapter(
     private val logger: Logger = LoggerFactory.getLogger(IpGeolocationPort::class.java)
     private val reader = DatabaseReader.Builder(mmdb.inputStream).build()
 
-    companion object {
-        private val LOCAL_IP_ADDRESSES = setOf("127.0.0.1", "::1", "0:0:0:0:0:0:0:1")
-    }
+    override fun getCountryCode(ipAddress: String): String {
+        return try {
+            val addr = InetAddress.getByName(ipAddress)
+            if (addr.isLoopbackAddress || addr.isSiteLocalAddress || addr.isLinkLocalAddress) {
+                return localCountry
+            }
 
-    override fun getCountryCode(ipAddress: String): String = when {
-        ipAddress in LOCAL_IP_ADDRESSES -> localCountry
-        else -> try {
             reader.country(InetAddress.getByName(ipAddress)).country().isoCode()
         } catch (e: Exception) {
             logger.error("Failed to resolve country for IP: $ipAddress", e)
